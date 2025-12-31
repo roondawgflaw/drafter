@@ -2,19 +2,19 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-const PUBLIC_PATHS = [
-  '/',
-  '/auth/login',
-  '/auth/signup',
-];
+const PUBLIC_PATHS = ['/', '/auth/login', '/auth/signup'];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (PUBLIC_PATHS.includes(pathname)) return NextResponse.next();
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  const requiresAuth = pathname.startsWith('/weeks') || pathname.startsWith('/standings') || pathname.startsWith('/draft') || pathname === '/submit';
+  const requiresAuth =
+    pathname.startsWith('/weeks') ||
+    pathname.startsWith('/standings') ||
+    pathname.startsWith('/draft') ||
+    pathname === '/submit';
   const requiresAdmin = pathname.startsWith('/admin');
 
   if (requiresAdmin) {

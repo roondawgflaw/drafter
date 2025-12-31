@@ -27,7 +27,7 @@ export default async function UnofficialStandings() {
         <tbody>
           {rows.map(([userId, total]) => (
             <tr key={userId}>
-              <td className="py-1">{subs.find(s => s.userId === userId)?.user.name || userId}</td>
+              <td className="py-1">{subs.find((s: { userId: string; user: { name: string } }) => s.userId === userId)?.user.name || userId}</td>
               <td className="py-1">{total}</td>
             </tr>
           ))}

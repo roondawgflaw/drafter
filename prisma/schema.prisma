@@ -1,0 +1,202 @@
+// Prisma schema for fantasy track & field web app
+// See implementation plan for model details
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String?
+  name          String?
+  leagues       LeagueMember[]
+  submissions   Submission[]
+  role          String
+  createdAt     DateTime @default(now())
+
+  // NextAuth relations
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model League {
+  id            String   @id @default(uuid())
+  name          String
+  inviteCode    String   @unique
+  commissioner  String
+  members       LeagueMember[]
+  weeks         Week[]
+  drafts        Draft[]
+  createdAt     DateTime @default(now())
+}
+
+model LeagueMember {
+  id            String   @id @default(uuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  league        League   @relation(fields: [leagueId], references: [id])
+  leagueId      String
+  teamName      String
+  joinedAt      DateTime @default(now())
+
+  // Opposite relations
+  draftPicks    DraftPick[]
+  rosters       Roster[]
+}
+
+model Week {
+  id            String   @id @default(uuid())
+  league        League   @relation(fields: [leagueId], references: [id])
+  leagueId      String
+  number        Int
+  deadline      DateTime
+  events        Event[]
+  matchups      Matchup[]
+  officialUpload OfficialUpload?
+
+  // Opposite relations
+  rosters       Roster[]
+}
+
+model Event {
+  id            String   @id @default(uuid())
+  week          Week     @relation(fields: [weekId], references: [id])
+  weekId        String
+  name          String
+  scoringTable  ScoringTable?
+
+  // Opposite relations
+  submissions   Submission[]
+}
+
+model Submission {
+  id            String   @id @default(uuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  event         Event    @relation(fields: [eventId], references: [id])
+  eventId       String
+  predictedMark Float
+  estimatedPoints Int
+  lockedAt      DateTime?
+  officialMark  Float?
+  officialPoints Int?
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, eventId], name: "user_event_unique")
+  @@index([eventId])
+}
+
+model OfficialUpload {
+  id            String   @id @default(uuid())
+  week          Week     @relation(fields: [weekId], references: [id])
+  weekId        String
+  csvUrl        String
+  uploadedBy    String
+  uploadedAt    DateTime @default(now())
+  auditLogs     AuditLog[]
+
+  // One-to-one with Week
+  @@unique([weekId])
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  upload        OfficialUpload @relation(fields: [uploadId], references: [id])
+  uploadId      String
+  action        String
+  timestamp     DateTime @default(now())
+}
+
+model Matchup {
+  id            String   @id @default(uuid())
+  week          Week     @relation(fields: [weekId], references: [id])
+  weekId        String
+  teamA         String
+  teamB         String
+  teamAScore    Int?
+  teamBScore    Int?
+  result        String?
+}
+
+model Draft {
+  id            String   @id @default(uuid())
+  league        League   @relation(fields: [leagueId], references: [id])
+  leagueId      String
+  rounds        Int
+  order         String
+  picks         DraftPick[]
+  startedAt     DateTime?
+  completedAt   DateTime?
+}
+
+model DraftPick {
+  id            String   @id @default(uuid())
+  draft         Draft    @relation(fields: [draftId], references: [id])
+  draftId       String
+  round         Int
+  pickNumber    Int
+  leagueMember  LeagueMember @relation(fields: [leagueMemberId], references: [id])
+  leagueMemberId String
+  athlete       String
+  pickedAt      DateTime @default(now())
+}
+
+model Roster {
+  id            String   @id @default(uuid())
+  leagueMember  LeagueMember @relation(fields: [leagueMemberId], references: [id])
+  leagueMemberId String
+  athlete       String
+  week          Week     @relation(fields: [weekId], references: [id])
+  weekId        String
+}
+
+model ScoringTable {
+  id            String   @id @default(uuid())
+  event         Event    @relation(fields: [eventId], references: [id])
+  eventId       String
+  mark          Float
+  points        Int
+
+  // One-to-one with Event
+  @@unique([eventId])
+}
+
+// NextAuth models
+model Account {
+  id                 String  @id @default(uuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  user               User    @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

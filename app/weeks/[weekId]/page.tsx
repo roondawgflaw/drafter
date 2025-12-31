@@ -1,6 +1,6 @@
 import { prisma } from '@/prisma/client';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 export default async function WeekPage({ params }: { params: { weekId: string } }) {
   const session = await getServerSession(authOptions);

@@ -39,5 +39,11 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|api/health|public).*)'],
+  matcher: [
+    '/admin/:path*',
+    '/weeks/:path*',
+    '/standings/:path*',
+    '/draft/:path*',
+    '/submit',
+  ],
 };

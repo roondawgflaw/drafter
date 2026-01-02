@@ -1,4 +1,4 @@
-export function generateRoundRobin(leagueMemberIds: string[]): [string, string][][] {
+export function generateRoundRobin(leagueMemberIds: string[]): string[][][] {
   // Returns array of weeks, each week is array of [teamA, teamB]
   const n = leagueMemberIds.length;
   const rounds = n - 1;

@@ -1,12 +1,12 @@
 import './globals.css';
 import { ReactNode } from 'react';
-import { SessionProvider } from 'next-auth/react';
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+import Providers from "./providers";
+
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-50 text-gray-900">
-        <SessionProvider>
+        <Providers>
           <div className="max-w-6xl mx-auto px-4 py-6">
             <header className="mb-6">
               <nav className="flex items-center justify-between">
@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </header>
             {children}
           </div>
-        </SessionProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -7,7 +7,6 @@ export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
     log: ['error'],
-    engineType: 'binary',
   });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

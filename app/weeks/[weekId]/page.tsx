@@ -12,7 +12,7 @@ export default async function WeekPage({ params }: { params: { weekId: string } 
       <h1 className="text-2xl font-semibold">Week {week.number}</h1>
       <p className="text-sm text-gray-600">Deadline: {new Date(week.deadline).toLocaleString('en-US', { timeZone: 'America/New_York' })}</p>
       <div className="mt-6 space-y-4">
-        {week.events.map(async (ev) => {
+        {week.events.map(async (ev: { id: string; name: string }) => {
           const existing = session?.user?.id ? await prisma.submission.findFirst({ where: { userId: (session.user as any).id, eventId: ev.id } }) : null;
           return (
             <div key={ev.id} className="border rounded p-4">

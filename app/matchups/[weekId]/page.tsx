@@ -5,8 +5,8 @@ type Matchup = {
   id: string;
   teamA: string;
   teamB: string;
-  teamAScore?: number;
-  teamBScore?: number;
+  teamAScore: number | null | undefined;
+  teamBScore: number | null | undefined;
 };
 
 export default async function MatchupMatrix({ params }: { params: { weekId: string } }) {

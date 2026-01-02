@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Upsert submission
   await prisma.submission.upsert({
-    where: { userId_eventId: { userId: session.user.id, eventId } },
+    where: { user_event_unique: { userId: session.user.id, eventId } },
     update: { predictedMark, estimatedPoints, lockedAt: new Date() },
     create: { userId: session.user.id, eventId, predictedMark, estimatedPoints, lockedAt: new Date() },
   });
